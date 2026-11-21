@@ -20,6 +20,15 @@ python3 scripts/make_square.py cover.json out.png
 }
 ```
 
+Animated version (silent looping MP4 for Telegram sendAnimation, ~60–180 KB):
+
+```bash
+python3 scripts/make_anim.py cover.json out.mp4 [seconds=7]
+```
+
+Use the jsDelivr link with the commit SHA for MP4 (it serves `video/mp4`; raw.githubusercontent serves `application/octet-stream`):
+`https://cdn.jsdelivr.net/gh/BekaRagnar/anvarov-covers@<SHA>/YYYY-MM-DD/<file>.mp4`
+
 Scene types (`scene.items`):
 
 | type | items |

@@ -29,7 +29,8 @@ def hex2rgb(h):
     return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
 
 
-def build(c, out):
+def layout(c):
+    """Static layer (background, rubric, title, shadow, footer) + window box."""
     acc = hex2rgb(c.get("accent", "#7C5CFF"))
     img = Image.new("RGB", (S, S), (10, 11, 20))
     glow = Image.new("RGB", (S, S), (0, 0, 0))
@@ -49,7 +50,6 @@ def build(c, out):
     d = ImageDraw.Draw(img)
     pad = 70
 
-    # rubric pill
     ft = font("semi", 26)
     tag = c.get("tag", "Yangilik").upper()
     tw = d.textlength(tag, font=ft)
@@ -60,31 +60,25 @@ def build(c, out):
         dw = d.textlength(c["date"], font=fdt)
         d.text((S - pad - dw, 76), c["date"], font=fdt, fill=(175, 180, 200, 255))
 
-    # title (max 3 lines)
     for size in (68, 62, 56, 50, 46):
         fb = font("bold", size)
         lines = wrap(d, c["title"], fb, S - 2 * pad)
         if len(lines) <= 3:
             break
-    lines = lines[:3]
     y = 146
-    for ln in lines:
+    for ln in lines[:3]:
         d.text((pad, y), ln, font=fb, fill=(255, 255, 255, 255))
         y += int(size * 1.16)
 
-    # mockup window
     top = max(y + 34, 380)
     bottom = S - 96
     ww, wh = S - 2 * pad, bottom - top
-    win = render_scene(c.get("scene", {}), ww, wh, acc)
     shadow = Image.new("RGBA", (S, S), (0, 0, 0, 0))
     ImageDraw.Draw(shadow).rounded_rectangle((pad + 10, top + 24, pad + ww + 10, bottom + 24), radius=30,
                                              fill=(0, 0, 0, 150))
     shadow = shadow.filter(ImageFilter.GaussianBlur(26))
     img = Image.alpha_composite(img, shadow)
-    img.alpha_composite(win, (pad, top))
 
-    # footer
     d = ImageDraw.Draw(img)
     ff = font("bold", 28)
     d.ellipse((pad, S - 62, pad + 20, S - 42), fill=acc + (255,))
@@ -92,7 +86,19 @@ def build(c, out):
     fm = font("med", 24)
     lab = "Sun'iy intellekt yangiliklari · @anvarov_si"
     d.text((S - pad - d.textlength(lab, font=fm), S - 66), lab, font=fm, fill=(170, 175, 195, 255))
-    img.convert("RGB").save(out, "PNG", optimize=True)
+    return img, acc, (pad, top, ww, wh)
+
+
+def frame(base, acc, box, scene, t=1.0, dy=0):
+    pad, top, ww, wh = box
+    img = base.copy()
+    img.alpha_composite(render_scene(scene, ww, wh, acc, t), (pad, top + dy))
+    return img
+
+
+def build(c, out):
+    base, acc, box = layout(c)
+    frame(base, acc, box, c.get("scene", {})).convert("RGB").save(out, "PNG", optimize=True)
     return out
 
 

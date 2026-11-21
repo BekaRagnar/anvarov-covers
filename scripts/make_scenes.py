@@ -66,7 +66,19 @@ def window(w, h, title, accent):
     return img, d
 
 
-def scene_chat(d, w, h, items, acc):
+def scene_chat(d, w, h, items, acc, t=1.0):
+    n = len(items)
+    shown = t * n
+    vis = []
+    for i, it in enumerate(items):
+        if shown <= i:
+            break
+        frac = min(1.0, shown - i)
+        txt = it.get("text", "")
+        if it.get("role", "ai") != "user" and frac < 1:
+            txt = txt[:max(1, int(len(txt) * frac))]
+        vis.append(dict(it, text=txt))
+    items = vis
     y, pad = 92, 30
     fb = font("reg", 25)
     # sidebar
@@ -104,7 +116,17 @@ def scene_chat(d, w, h, items, acc):
     d.text((x1 - 41, h - 76), "↑", font=font("bold", 28), fill=(255, 255, 255, 255))
 
 
-def scene_code(d, w, h, items, acc):
+def scene_code(d, w, h, items, acc, t=1.0):
+    total = sum(len(str(l)) + 1 for l in items[:12])
+    budget = int(total * min(1.0, t * 1.15))
+    typed = []
+    for l in items[:12]:
+        l = str(l)
+        if budget <= 0:
+            break
+        typed.append(l[:budget])
+        budget -= len(l) + 1
+    items = typed
     fm = font("mono", 24)
     d.rectangle((0, 65, 64, h - 2), fill=(26, 28, 42, 255))
     kw = ("def", "return", "import", "from", "const", "async", "await", "function", "class", "if", "for", "in")
@@ -147,7 +169,21 @@ def scene_code(d, w, h, items, acc):
     d.text((bx + 26, h - 66), "Qabul", font=font("semi", 22), fill=(255, 255, 255, 255))
 
 
-def scene_settings(d, w, h, items, acc):
+def scene_settings(d, w, h, items, acc, t=1.0):
+    k = len(items[:6])
+    vis = []
+    for i, it in enumerate(items[:6]):
+        if t * (k + 1) < i + 0.3:
+            break
+        it = dict(it)
+        local = t * (k + 1) - i
+        v = it.get("value", True)
+        if isinstance(v, bool) and local < 1:
+            it["value"] = not v
+        elif isinstance(v, (int, float)) and not isinstance(v, bool):
+            it["value"] = float(v) * min(1.0, local)
+        vis.append(it)
+    items = vis
     pad, y = 40, 92
     fl, fv = font("semi", 26), font("reg", 22)
     for it in items[:6]:
@@ -178,10 +214,11 @@ def scene_settings(d, w, h, items, acc):
         y += 86
 
 
-def scene_image(d, w, h, items, acc, img):
+def scene_image(d, w, h, items, acc, img, t=1.0):
     pad = 30
     d.rounded_rectangle((pad, 84, w - pad, 140), radius=28, fill=PANEL + (255,), outline=LINE + (255,), width=2)
     prompt = items[0] if items else "Prompt..."
+    prompt = prompt[:max(1, int(len(prompt) * min(1.0, t * 2.5)))]
     fp = font("reg", 22)
     pl = wrap(d, prompt, fp, w - 2 * pad - 200)
     d.text((pad + 24, 99), (pl[0] if pl else "") + ("…" if len(pl) > 1 else ""), font=fp, fill=TXT + (255,))
@@ -194,7 +231,12 @@ def scene_image(d, w, h, items, acc, img):
     th = gy1 - gy0
     palettes = [((255, 140, 80), (120, 60, 200)), ((60, 200, 220), (30, 60, 160)),
                 ((250, 210, 90), (220, 80, 120)), ((120, 230, 150), (40, 100, 140))]
+    reveal = max(0.0, (t - 0.35) / 0.65) * cols
     for i in range(cols):
+        if reveal <= i:
+            x0 = int(pad + i * (tw + gap))
+            d.rounded_rectangle((x0, gy0, x0 + tw, gy1), radius=18, fill=PANEL + (255,), outline=LINE + (255,), width=2)
+            continue
         x0 = int(pad + i * (tw + gap))
         tile = Image.new("RGB", (int(tw), int(th)))
         td = ImageDraw.Draw(tile)
@@ -216,7 +258,7 @@ def scene_image(d, w, h, items, acc, img):
             d.text((x0 + 20, gy1 - 40), lab, font=fl, fill=(255, 255, 255, 255))
 
 
-def scene_voice(d, w, h, items, acc):
+def scene_voice(d, w, h, items, acc, t=1.0):
     cx, cy = w // 2, 200
     for r, a in ((110, 40), (82, 80), (56, 255)):
         d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=acc + (a,))
@@ -225,11 +267,13 @@ def scene_voice(d, w, h, items, acc):
     bars = 46
     for i in range(bars):
         x = 50 + i * (w - 100) / bars
-        amp = 10 + 46 * abs(math.sin(i * 0.55) * math.cos(i * 0.17))
+        ph = t * 2 * math.pi * 3
+        amp = 10 + 46 * abs(math.sin(i * 0.55 + ph) * math.cos(i * 0.17 - ph * 0.5))
         d.rounded_rectangle((x, 360 - amp, x + 8, 360 + amp), radius=4, fill=mix(acc, (255, 255, 255), 0.3) + (255,))
     fy = 440
     fs = font("reg", 24)
-    for it in items[:3]:
+    items = [x for j, x in enumerate(items[:3]) if t >= 0.3 + j * 0.25 or t >= 1.0]
+    for it in items:
         for l in wrap(d, it, fs, w - 120)[:2]:
             if fy > h - 40:
                 break
@@ -238,7 +282,8 @@ def scene_voice(d, w, h, items, acc):
         fy += 10
 
 
-def scene_stats(d, w, h, items, acc):
+def scene_stats(d, w, h, items, acc, t=1.0):
+    e = 1 - (1 - min(1.0, t)) ** 3
     pad, y = 44, 96
     vals = [float(it.get("value", 0)) for it in items[:5]] or [1]
     mx = max(vals) or 1
@@ -250,29 +295,29 @@ def scene_stats(d, w, h, items, acc):
         hl = it.get("highlight", i == 0)
         d.text((pad, y), lab, font=fl, fill=TXT + (255,))
         y += 34
-        x1 = pad + (w - 2 * pad - 110) * v / mx
+        x1 = pad + (w - 2 * pad - 110) * v / mx * e
         d.rounded_rectangle((pad, y, w - pad - 110, y + bar_h), radius=12, fill=PANEL + (255,))
         d.rounded_rectangle((pad, y, max(pad + 24, x1), y + bar_h), radius=12,
                             fill=(acc if hl else (88, 94, 124)) + (255,))
-        s = it.get("text", f"{v:g}")
+        s = it.get("text", f"{v:g}") if e > 0.97 else f"{v * e:.1f}"
         d.text((w - pad - 96, y + bar_h / 2 - 16), s, font=fv, fill=TXT + (255,))
         y += bar_h + 22
 
 
-def render_scene(spec, w, h, accent):
-    t = spec.get("type", "chat")
+def render_scene(spec, w, h, accent, t=1.0):
+    kind, prog = spec.get("type", "chat"), t
     img, d = window(w, h, spec.get("app", "AI"), accent)
     items = spec.get("items", [])
-    if t == "code":
-        scene_code(d, w, h, items, accent)
-    elif t == "settings":
-        scene_settings(d, w, h, items, accent)
-    elif t == "image":
-        scene_image(d, w, h, items, accent, img)
-    elif t == "voice":
-        scene_voice(d, w, h, items, accent)
-    elif t == "stats":
-        scene_stats(d, w, h, items, accent)
+    if kind == "code":
+        scene_code(d, w, h, items, accent, prog)
+    elif kind == "settings":
+        scene_settings(d, w, h, items, accent, prog)
+    elif kind == "image":
+        scene_image(d, w, h, items, accent, img, prog)
+    elif kind == "voice":
+        scene_voice(d, w, h, items, accent, prog)
+    elif kind == "stats":
+        scene_stats(d, w, h, items, accent, prog)
     else:
-        scene_chat(d, w, h, items, accent)
+        scene_chat(d, w, h, items, accent, prog)
     return img

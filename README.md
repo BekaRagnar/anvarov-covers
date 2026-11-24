@@ -41,3 +41,14 @@ Scene types (`scene.items`):
 | `stats` | `[{"label": "...", "value": 88.4, "text": "88.4", "highlight": true}]` — up to 5 bars |
 
 Rules: no logos, no real faces; tool and model names only as plain text.
+
+## Video/animation posts (GitHub Actions)
+
+Zapier cannot send video to Telegram, so MP4 posts go through `.github/workflows/telegram.yml`.
+Requires the repository secret `TELEGRAM_BOT_TOKEN` (Settings → Secrets and variables → Actions).
+
+1. Commit the MP4 and `queue/<YYYY-MM-DD>_<HHMM>_<slug>.json`:
+   `{"chat_id": "@anvarov_si", "kind": "animation", "media": "YYYY-MM-DD/HHMM_slug.mp4", "caption": "..."}`
+2. Push to main. The workflow sends it and commits `queue/<same name>.result.json`:
+   `{"ok": true, "message_id": 47, "link": "https://t.me/anvarov_si/47"}` or `{"ok": false, "error": "..."}`
+3. Poll `git pull` (or the raw URL) for the result file, usually 20–60 s.

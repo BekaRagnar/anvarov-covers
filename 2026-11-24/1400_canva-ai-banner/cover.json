@@ -1,0 +1,18 @@
+{
+  "tag": "Qo'llanma",
+  "title": "Canva + AI: 10 daqiqada banner",
+  "accent": "#A855F7",
+  "date": "24.11.2026",
+  "scene": {"type": "chat", "app": "Canva AI", "items": [
+    {"role": "user", "text": "Kofe do'koni uchun 1080x1080 aksiya banneri: -20%, iliq ranglar, qisqa sarlavha"},
+    {"role": "ai", "text": "4 ta variant tayyor. Sarlavha va rasmlar tahrirlanadigan holda qoldi."},
+    {"role": "user", "text": "Faqat shriftni nafisroq qil, qolganiga tegma"}
+  ]},
+  "slides": [
+    {"title": "1-qadam: Vazifani aniq yozing", "text": "Canva AI oynasini oching. Banner haqida 4 narsani bir xabarda ayting.", "bullets": ["O'lcham: 1080x1080 yoki 1280x720", "Maqsad: aksiya, e'lon, tadbir", "Matn: sarlavha + 1 qator", "Uslub va ranglar"]},
+    {"title": "2-qadam: Tayyor promt", "text": "Qavs ichidagilarni o'zingizniki bilan almashtiring.", "prompt": "[Biznes] uchun [o'lcham] banner yasa. Maqsad: [aksiya]. Sarlavha: \"[matn]\". Uslub: [minimalistik], ranglar: [2-3 rang]. Matn katta va o'qilishi oson bo'lsin."},
+    {"title": "3-qadam: Variantni tanlang", "text": "Bir nechta variantdan eng yaqinini oling va editorda oching.", "bullets": ["Logotip va brend ranglarini qo'ying", "Rasmni o'z mahsulotingiz bilan almashtiring", "Telefonda o'qilishini tekshiring"]},
+    {"title": "4-qadam: Brush bilan nozik tahrir", "text": "Pro obunada model menyusidan Brush (Beta) ni tanlang. U dizaynni ko'rib, faqat so'ralgan qismni o'zgartiradi.", "bullets": ["O'zgartir: nimani", "Saqla: nimaga tegmaslik", "Qayerda: bitta yoki barcha sahifa"]},
+    {"title": "5-qadam: Yuklab oling", "text": "Share - Download: Telegram uchun PNG, chop etish uchun PDF. Saqlab qo'ying va keyingi bannerni shablondan boshlang."}
+  ]
+}

@@ -3,6 +3,9 @@
 For every queue/*.json that has no matching queue/*.result.json yet:
   {"chat_id": "@anvarov_si", "kind": "animation"|"video"|"photo",
    "media": "2026-11-24/1130_slug.mp4", "caption": "..."}
+  or an album (carousel, 2-10 images; caption goes on the first one):
+  {"chat_id": "@anvarov_si", "kind": "album",
+   "media": ["2026-11-24/1400_slug/01.png", "..."], "caption": "..."}
 sends the file from the repo via the Bot API and writes <name>.result.json:
   {"ok": true, "message_id": 47, "link": "https://t.me/anvarov_si/47"} or
   {"ok": false, "error": "..."}
@@ -20,8 +23,40 @@ METHODS = {"animation": ("sendAnimation", "animation"),
            "photo": ("sendPhoto", "photo")}
 
 
+def send_album(job):
+    files = job.get("media") or []
+    if not isinstance(files, list) or not 2 <= len(files) <= 10:
+        return {"ok": False, "error": "album needs 2-10 files in media"}
+    for f in files:
+        if not os.path.isfile(f):
+            return {"ok": False, "error": f"file not found: {f}"}
+    items = []
+    for i, _ in enumerate(files):
+        it = {"type": "photo", "media": f"attach://f{i}"}
+        if i == 0 and job.get("caption"):
+            it["caption"] = job["caption"]
+        items.append(it)
+    mfile = "/tmp/media.json"
+    with open(mfile, "w", encoding="utf-8") as fh:
+        json.dump(items, fh, ensure_ascii=False)
+    cmd = ["curl", "-sS", "--max-time", "180",
+           f"https://api.telegram.org/bot{TOKEN}/sendMediaGroup",
+           "--form-string", f"chat_id={job.get('chat_id', '@anvarov_si')}",
+           "-F", f"media=<{mfile}"]
+    for i, f in enumerate(files):
+        cmd += ["-F", f"f{i}=@{f}"]
+    return cmd
+
+
 def send(job):
     kind = job.get("kind", "animation")
+    if kind == "album":
+        if not TOKEN:
+            return {"ok": False, "error": "secret TELEGRAM_BOT_TOKEN is not set"}
+        cmd = send_album(job)
+        if isinstance(cmd, dict):
+            return cmd
+        return run(cmd)
     if kind not in METHODS:
         return {"ok": False, "error": f"unknown kind {kind}"}
     if not TOKEN:
@@ -40,6 +75,10 @@ def send(job):
            "-F", f"caption=<{cap}"]
     if kind == "video":
         cmd += ["--form-string", "supports_streaming=true"]
+    return run(cmd)
+
+
+def run(cmd):
     out = subprocess.run(cmd, capture_output=True, text=True)
     try:
         r = json.loads(out.stdout)
@@ -47,7 +86,7 @@ def send(job):
         return {"ok": False, "error": (out.stderr or out.stdout)[:300].replace(TOKEN, "***")}
     if not r.get("ok"):
         return {"ok": False, "error": str(r.get("description", r))[:300]}
-    msg = r["result"]
+    msg = r["result"][0] if isinstance(r["result"], list) else r["result"]
     chat = msg.get("chat", {})
     res = {"ok": True, "message_id": msg["message_id"]}
     if chat.get("username"):

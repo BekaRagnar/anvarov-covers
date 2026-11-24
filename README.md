@@ -42,6 +42,14 @@ Scene types (`scene.items`):
 
 Rules: no logos, no real faces; tool and model names only as plain text.
 
+## Carousel (album)
+
+```bash
+python3 scripts/make_carousel.py carousel.json YYYY-MM-DD/HHMM_slug/
+```
+`carousel.json` = cover fields + `"slides": [{"title", "text", "bullets": [...], "prompt"}]` (up to 9 slides).
+Writes `01.png` (cover) + `02.png`… Send with a queue job of `"kind": "album"` and `"media": [list of PNG paths]`.
+
 ## Video/animation posts (GitHub Actions)
 
 Zapier cannot send video to Telegram, so MP4 posts go through `.github/workflows/telegram.yml`.

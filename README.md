@@ -42,6 +42,12 @@ Scene types (`scene.items`):
 
 Rules: no logos, no real faces; tool and model names only as plain text.
 
+## Slideshow post (Rich Message)
+
+Queue job `"kind": "slideshow"` with `"media": [PNG paths]` and plain `"caption"`: the script sends `sendRichMessage`
+(first caption line in bold → swipeable `<tg-slideshow>` → rest of the text). If Telegram rejects it, the same post
+goes out as an album; the result has `"sent_as": "slideshow"|"album"` and `"slideshow_error"`.
+
 ## Carousel (album)
 
 ```bash

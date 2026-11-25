@@ -3,6 +3,10 @@
 For every queue/*.json that has no matching queue/*.result.json yet:
   {"chat_id": "@anvarov_si", "kind": "animation"|"video"|"photo",
    "media": "2026-11-24/1130_slug.mp4", "caption": "..."}
+  or a slideshow post (Rich Message, Bot API 10.1+: article text + swipeable slideshow;
+  falls back to an album automatically if Telegram rejects it):
+  {"chat_id": "@anvarov_si", "kind": "slideshow",
+   "media": ["2026-11-24/1400_slug/01.png", "..."], "caption": "plain post text"}
   or an album (carousel, 2-10 images; caption goes on the first one):
   {"chat_id": "@anvarov_si", "kind": "album",
    "media": ["2026-11-24/1400_slug/01.png", "..."], "caption": "..."}
@@ -48,8 +52,74 @@ def send_album(job):
     return cmd
 
 
+def _esc(t):
+    return t.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def slideshow_html(caption, n):
+    """First line of the post -> bold lead, then the slideshow, then the rest as paragraphs."""
+    lines = caption.strip().split("\n")
+    head, rest = (lines[0], lines[1:]) if lines else ("", [])
+    imgs = "".join(f'<img src="tg://photo?id=s{i}"/>' for i in range(n))
+    paras, buf = [], []
+    for ln in rest:
+        if ln.strip():
+            buf.append(_esc(ln))
+        elif buf:
+            paras.append("<p>" + "<br/>".join(buf) + "</p>")
+            buf = []
+    if buf:
+        paras.append("<p>" + "<br/>".join(buf) + "</p>")
+    return f"<p><b>{_esc(head)}</b></p><tg-slideshow>{imgs}</tg-slideshow>" + "".join(paras)
+
+
+def send_slideshow(job):
+    files = job.get("media") or []
+    if not isinstance(files, list) or not 2 <= len(files) <= 20:
+        return {"ok": False, "error": "slideshow needs 2-20 files in media"}
+    for f in files:
+        if not os.path.isfile(f):
+            return {"ok": False, "error": f"file not found: {f}"}
+    rich = {"html": slideshow_html(job.get("caption", ""), len(files)),
+            "media": [{"id": f"s{i}", "media": {"type": "photo", "media": f"attach://f{i}"}}
+                      for i in range(len(files))]}
+    rfile = "/tmp/rich.json"
+    with open(rfile, "w", encoding="utf-8") as fh:
+        json.dump(rich, fh, ensure_ascii=False)
+    cmd = ["curl", "-sS", "--max-time", "180",
+           f"https://api.telegram.org/bot{TOKEN}/sendRichMessage",
+           "--form-string", f"chat_id={job.get('chat_id', '@anvarov_si')}",
+           "-F", f"rich_message=<{rfile}"]
+    if job.get("disable_notification"):
+        cmd += ["--form-string", "disable_notification=true"]
+    for i, f in enumerate(files):
+        cmd += ["-F", f"f{i}=@{f}"]
+    return run(cmd)
+
+
+def delete_message(chat_id, message_id):
+    subprocess.run(["curl", "-sS", "--max-time", "60",
+                    f"https://api.telegram.org/bot{TOKEN}/deleteMessage",
+                    "--form-string", f"chat_id={chat_id}",
+                    "--form-string", f"message_id={message_id}"], capture_output=True, text=True)
+
+
 def send(job):
     kind = job.get("kind", "animation")
+    if kind == "slideshow":
+        if not TOKEN:
+            return {"ok": False, "error": "secret TELEGRAM_BOT_TOKEN is not set"}
+        res = send_slideshow(job)
+        if res.get("ok"):
+            res["sent_as"] = "slideshow"
+            return res
+        if len(job.get("media") or []) > 10:
+            job = dict(job, media=job["media"][:10])
+        cmd = send_album(job)
+        alb = cmd if isinstance(cmd, dict) else run(cmd)
+        alb["sent_as"] = "album"
+        alb["slideshow_error"] = res.get("error", "")
+        return alb
     if kind == "album":
         if not TOKEN:
             return {"ok": False, "error": "secret TELEGRAM_BOT_TOKEN is not set"}
@@ -105,6 +175,9 @@ def main():
         try:
             job = json.load(open(path, encoding="utf-8"))
             res = send(job)
+            if res.get("ok") and job.get("test_delete"):
+                delete_message(job.get("chat_id", "@anvarov_si"), res["message_id"])
+                res["deleted"] = True
         except Exception as e:  # noqa: BLE001
             res = {"ok": False, "error": f"{type(e).__name__}: {e}"[:300]}
         json.dump(res, open(result_path, "w", encoding="utf-8"), ensure_ascii=False)

@@ -1,0 +1,6 @@
+{
+ "chat_id": "@anvarov_si",
+ "kind": "animation",
+ "media": "2026-11-26/1130_bonsai-25-27b.mp4",
+ "caption": "💻 27 mlrd parametrli kod agenti endi atigi 5,9 GB\n\nPrismML ochiq Ternary Bonsai 2.5 27B modelini chiqardi. U Qwen3.8 27B asosida qurilgan, lekin og'irliklari \"ternar\" usulda siqilgan: to'liq versiyadan taxminan 9 baravar kichik.\n\n• Kod va agent vazifalari uchun moslangan: ko'p bosqichli ishlar, vositalarni chaqirish\n• SWE-bench Verified: 75,6 (oldingi Bonsai 2 — 60,8, to'liq model — 80,6), kompaniya ma'lumotiga ko'ra\n• Apache 2.0 litsenziyasi, Hugging Face'da bepul\n• Nvidia va Intel GPU'larda (llama.cpp) hamda Apple qurilmalarida (MLX) ishlaydi\n\n💬 Nega muhim: kuchli kod yordamchisini bulutga pul to'lamasdan, o'z kompyuteringizda va internetsiz ishlatish mumkin bo'lyapti. Kodingiz tashqariga chiqmaydi. Ammo xotira 5,9 GB dan ko'proq kerak bo'ladi, mustaqil testlar hali yo'q.\n\n#AI #OchiqModel #Dasturlash"
+}

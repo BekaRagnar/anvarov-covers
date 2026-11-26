@@ -1,0 +1,19 @@
+{
+  "tag": "Qo'llanma",
+  "title": "AI agent nima? Oddiy tilda tushuntiramiz",
+  "accent": "#A855F7",
+  "date": "26.11.2026",
+  "scene": {"type": "chat", "app": "AI agent", "items": [
+    {"role": "user", "text": "Toshkentdan Samarqandga shanba kungi poyezdlarni topib, narxlarini jadvalga yoz"},
+    {"role": "ai", "text": "Reja: 1) jadvalni qidiraman 2) narxlarni solishtiraman 3) jadval tuzaman. Boshladim..."},
+    {"role": "ai", "text": "Tayyor: 4 ta reys jadvalda. Chipta olishdan oldin sizdan tasdiq so'rayman."}
+  ]},
+  "slides": [
+    {"title": "Chatbot va agent farqi", "text": "Chatbot savolga javob beradi. Agent esa vazifani oladi va uni o'zi bosqichma-bosqich bajaradi.", "bullets": ["Chatbot: so'radingiz - javob oldingiz", "Agent: maqsad berdingiz - natija oldingiz", "Agent oraliq qadamlarni o'zi tanlaydi"]},
+    {"title": "Agent qanday ishlaydi", "text": "Har qanday agent shu 4 qadamni aylana bo'ylab takrorlaydi.", "bullets": ["Reja: vazifani bo'laklarga ajratadi", "Harakat: qidiradi, fayl ochadi, kod yozadi", "Tekshiruv: natijani baholaydi", "Takror: xato bo'lsa, qayta urinadi"]},
+    {"title": "Agentning 'qo'llari' - vositalar", "text": "Agentni oddiy chatbotdan ajratadigan narsa - vositalar. Ular orqali u dunyo bilan ishlaydi.", "bullets": ["Brauzer va internet qidiruvi", "Fayllar, jadval, pochta", "Kod yozish va ishga tushirish", "Boshqa ilovalarga ulanish"]},
+    {"title": "Agentga vazifa berish: promt", "text": "Maqsad, chegara va tekshiruvni aniq yozing.", "prompt": "Vazifa: [nima qilish kerak]. Natija: [jadval/hisobot/fayl]. Chegaralar: [nimaga tegmaslik]. Pul to'lash, xat yuborish yoki o'chirishdan oldin mendan so'ra. Oxirida nima qilganingni qisqa yoz."},
+    {"title": "Xavfsizlik qoidalari", "text": "Agent sizning nomingizdan harakat qiladi, shuning uchun nazorat sizda qolsin.", "bullets": ["Faqat kerakli ruxsatlarni bering", "Parol va karta ma'lumotini bermang", "Muhim harakatni o'zingiz tasdiqlang", "Natijani doim tekshiring"]},
+    {"title": "Xulosa", "text": "AI agent - maqsadni o'zi qadamlarga bo'lib bajaradigan yordamchi. Kichik vazifadan boshlang va postni saqlab qo'ying."}
+  ]
+}

@@ -1,0 +1,6 @@
+{
+ "chat_id": "@anvarov_si",
+ "kind": "animation",
+ "media": "2026-11-27/1130_nvidia-nemotron-image.mp4",
+ "caption": "🎨 Nvidia bepul rasm generatori chiqardi: Nemotron-Labs-Image\n\nNvidia Hugging Face'da Nemotron-Labs-Image-30B-A3B modelini ochiq joylashtirdi. Unda 30 mlrd parametr bor, har qadamda 3 mlrd tasi ishlaydi; asosi — Nvidia'ning Nemotron 3 Nano modeli.\n\n• Diffuziya emas: rasmni LLM matn yozgandek, token-ma-token \"chizadi\"\n• Foto, illyustratsiya, matnli rasm va infografika yaratadi\n• Kompaniya ma'lumotiga ko'ra, GPT-6 bilan bog'langan tizim GenEval'da 92,86 ball oldi (GPT Image 2 — 89)\n\n⚠️ Litsenziya: faqat notijorat tadqiqot va sinov uchun. Rasmiy misol 4 ta H100 GPU'da ishga tushirilgan.\n\n💬 Nega muhim: kuchli rasm AI'lari endi faqat yopiq servislarda emas — ochiq model raqobatni kuchaytiradi. Nvidia keyin veb-sahifa, taqdimot va grafik yaratadigan modellarni ham va'da qilmoqda.\n\n#AI #Nvidia #RasmGeneratsiya"
+}

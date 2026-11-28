@@ -1,0 +1,14 @@
+{
+ "chat_id": "@anvarov_si",
+ "kind": "slideshow",
+ "media": [
+  "2026-11-28/1400_mcp-nima/01.png",
+  "2026-11-28/1400_mcp-nima/02.png",
+  "2026-11-28/1400_mcp-nima/03.png",
+  "2026-11-28/1400_mcp-nima/04.png",
+  "2026-11-28/1400_mcp-nima/05.png",
+  "2026-11-28/1400_mcp-nima/06.png",
+  "2026-11-28/1400_mcp-nima/07.png"
+ ],
+ "caption": "🔌 MCP nima va nega hamma u haqida gapirmoqda\n\nMCP (Model Context Protocol) — AI'ni tashqi tizimlarga ulaydigan ochiq standart: pochta, hujjatlar, kalendar, bazalar. Rasmiy saytda uni \"AI uchun USB-C porti\" deb atashadi.\n\nNega aynan hozir? Google e'lon qildi: 1-fevral 2027 dan Workspace'ga (Gmail, Drive, Docs) AI agentlar MCP yoki CLI orqali ulanadi. Anthropic esa Claude'da \"Skills over MCP\" ochiq betasini boshladi.\n\nSlaydlarda: MCP qanday ishlaydi, nimalarga qodir va xavfsiz ulanish uchun 4 qoida.\n\n💡 Maslahat: Faqat ishonchli MCP serverlarni ulang — begona server AI'ga yashirin buyruq berishi mumkin.\n\n🔗 MCP rasmiy sayti: https://modelcontextprotocol.io/introduction\n\n👉 Slaydlarni varaqlang\n\n#AI #MCP #AIagentlar"
+}
